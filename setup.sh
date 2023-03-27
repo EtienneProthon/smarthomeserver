@@ -1,4 +1,5 @@
 source .env
+sudo mkdir -p $DATADIR/homepage && sudo cp config/adguardhome-docker.yaml $DATADIR/homepage/docker.yaml
 sudo mkdir -p $DATADIR/loki/config && sudo cp config/loki-config.yaml $DATADIR/loki/config/loki-config.yaml
 sudo mkdir -p $DATADIR/prometheus/etc && sudo cp config/prometheus_config.yaml $DATADIR/prometheus/etc/prometheus.yml
 sudo mkdir -p $DATADIR/mosquitto/config && sudo cp config/mosquitto.conf $DATADIR/mosquitto/config/mosquitto.conf

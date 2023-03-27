@@ -54,7 +54,7 @@ services:
     labels:
       - homepage.group=Network
       - homepage.name=AdGuard
-      - homepage.icon=adguard.png
+      - homepage.icon=adguard-home.png
       - homepage.href=http://localhost:3380
       - homepage.description=Ad blocker
       - homepage.widget.type=adguard
