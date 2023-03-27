@@ -43,13 +43,13 @@ services:
     ports:
       - 127.0.0.1:8086:8086
 
-  tasmoadmin:
-    image: "raymondmm/tasmoadmin"
-    restart: unless-stopped
-    volumes:
-      - "${DATADIR}/tasmoadmin:/data"
-    ports:
-      - 3080:80
+  # tasmoadmin:
+  #   image: "raymondmm/tasmoadmin"
+  #   restart: unless-stopped
+  #   volumes:
+  #     - "${DATADIR}/tasmoadmin:/data"
+  #   ports:
+  #     - 3080:80
 
   zigbee2mqtt:
     image: koenkk/zigbee2mqtt
