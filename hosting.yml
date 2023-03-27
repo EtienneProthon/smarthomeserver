@@ -10,7 +10,7 @@ services:
       - 9080:3000
     volumes:
       - ${DATADIR}/homepage:/app/config # Make sure your local config directory exists
-      # - /var/run/docker.sock:/var/run/docker.sock # (optional) For docker integrations, see alternative methods
+      - /var/run/docker.sock:/var/run/docker.sock # (optional) For docker integrations, see alternative methods
     environment:
       PUID: $PUID
       PGID: $PGID
