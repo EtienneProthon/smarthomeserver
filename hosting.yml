@@ -51,7 +51,17 @@ services:
       options:
         loki-url: "http://localhost:3100/loki/api/v1/push"
         max-size: "200m"
-
+    labels:
+      - homepage.group=Network
+      - homepage.name=AdGuard
+      - homepage.icon=adguard.png
+      - homepage.href=http://localhost:3380
+      - homepage.description=Ad blocker
+      - homepage.widget.type=adguard
+      - homepage.widget.url=http://localhost:3380
+      - homepage.widget.username=admin
+      - homepage.widget.password=password
+      - homepage.widget.fields=["queries", "blocked", "filtered", "latency"] 
 
   # WIFI hotspot
   # unifi-controller:
@@ -105,6 +115,16 @@ services:
       options:
         loki-url: "http://localhost:3100/loki/api/v1/push"
         max-size: "200m"
+    labels:
+      - homepage.group=Tools
+      - homepage.name=WatchTower
+      - homepage.icon=watchtower.png
+      - homepage.href=http://localhost:8080
+      - homepage.description=Auto update docker containers
+      - homepage.widget.type=watchtower
+      - homepage.widget.url=http://localhost:8080
+      - homepage.widget.key=demotoken
+      - homepage.widget.fields=["containers_scanned", "containers_updated", "containers_failed"] 
 
   loki:
     container_name: loki
