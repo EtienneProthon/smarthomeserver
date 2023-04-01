@@ -11,9 +11,9 @@ services:
     volumes:
       - ${DATADIR}/homepage:/app/config # Make sure your local config directory exists
       - /var/run/docker.sock:/var/run/docker.sock # (optional) For docker integrations, see alternative methods
-    environment:
-      PUID: $PUID
-      PGID: $PGID
+    # environment:
+    #   PUID: $PUID
+    #   PGID: $PGID
   # heimdall:
   #   image: linuxserver/heimdall
   #   container_name: heimdall
@@ -141,6 +141,11 @@ services:
       options:
         loki-url: "http://localhost:3100/loki/api/v1/push"
         max-size: "200m"
+    labels:
+      - homepage.group=Tools
+      - homepage.name=Loki
+      - homepage.icon=loki.png
+      - homepage.description=Logs aggregator
 
 
   # duplicati:
@@ -189,7 +194,7 @@ services:
     ports:
       - 3000:3000
     labels:
-      - homepage.group=Tools
+      - homepage.group=Metrics
       - homepage.name=Grafana
       - homepage.icon=grafana.png
       - homepage.href=http://${IP_PI1}:3000
@@ -253,8 +258,9 @@ services:
         loki-url: "http://localhost:3100/loki/api/v1/push"
         max-size: "500m"
     labels:
-      - homepage.group=Tools
+      - homepage.group=Home Automation
       - homepage.name=Zigbee2mqtt
+      - homepage.icon=zigbee2mqtt.png
       - homepage.description=Zigbee to MQTT
  
   zigbee2mqttAssistant:
@@ -268,6 +274,10 @@ services:
       - TZ=${TZ}
     ports:
       - 8880:80
+    labels:
+      - homepage.group=Home Automation
+      - homepage.name=Zigbee2mqttAssistant
+      - homepage.description=Zigbee to MQTT Assistant
 
   homeassistant:
     container_name: homeassistant
@@ -298,11 +308,84 @@ services:
     labels:
       # don't automatically update this container as it might break your setup
       - "com.centurylinklabs.watchtower.enable=false"
-      - homepage.group=Tools
+      - homepage.group=Home Automation
       - homepage.name=HomeAssistant
+      - homepage.icon=home-assistant.png
       - homepage.href=http://${IP_PI1}:8123
     logging:
       driver: loki
       options:
         loki-url: "http://localhost:3100/loki/api/v1/push"
         max-size: "500m"
+
+  # Monitoring
+  prometheus:
+    image: prom/prometheus:v2.37.0
+    container_name: prometheus
+    restart: unless-stopped
+    user: ${PUID}:${PGID}
+    ports:
+      - "9090:9090"
+    volumes:
+      - ${DATADIR}/prometheus/etc:/etc/prometheus
+      - ${DATADIR}/prometheus/data:/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://localhost:3100/loki/api/v1/push"
+        max-size: "10m"
+    labels:
+      - homepage.group=Monitoring
+      - homepage.name=Prometheus
+      - homepage.icon=prometheus.png
+      - homepage.description=Metrics aggregator
+
+  node_exporter:
+    image: prom/node-exporter
+    container_name: node_exporter
+    command:
+      - '--path.rootfs=/host'
+    pid: host
+    restart: unless-stopped
+    volumes:
+      - '/:/host:ro,rslave'
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://localhost:3100/loki/api/v1/push"
+        max-size: "10m"
+    labels:
+      - homepage.group=Monitoring
+      - homepage.name=NodeExporter
+      - homepage.description=Metrics
+
+  cadvisor:
+    #image: gcr.io/cadvisor/cadvisor
+    image: zcube/cadvisor:latest
+    container_name: cadvisor
+    command:
+      - "--docker_only=true"
+      - "--housekeeping_interval=30s"
+      - "--disable_metrics=accelerator,cpu_topology,disk,memory_numa,tcp,udp,percpu,sched,process,hugetlb,referenced_memory,resctrl,cpuset,advtcp,memory_numa"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+      - /etc/machine-id:/etc/machine-id:ro
+    devices:
+      - /dev/kmsg
+    restart: unless-stopped
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://localhost:3100/loki/api/v1/push"
+        max-size: "10m"
+    labels:
+      - homepage.group=Monitoring
+      - homepage.name=cAdvisor
+      - homepage.icon=cadvisor.png
+      - homepage.description=Container Advisor
