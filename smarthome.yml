@@ -136,6 +136,9 @@ services:
       - ${DATADIR}/loki/config/loki-config.yaml:/etc/loki/loki-config.yaml
       - ${DATADIR}/loki/data:/data/loki
     command: -config.file=/etc/loki/loki-config.yaml
+    ingester:
+      wal:
+        dir: "/tmp/wal"
     logging:
       driver: loki
       options:
