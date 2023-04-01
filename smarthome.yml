@@ -55,10 +55,10 @@ services:
       - homepage.group=Network
       - homepage.name=AdGuard
       - homepage.icon=adguard-home.png
-      - homepage.href=http://localhost:3380
+      - homepage.href=http://{IP_PI1}:3380
       - homepage.description=Ad blocker
       - homepage.widget.type=adguard
-      - homepage.widget.url=http://localhost:3380
+      - homepage.widget.url=http://${IP_PI1}:3380
       - homepage.widget.username=admin
       - homepage.widget.password=password
       - homepage.widget.fields=["queries", "blocked", "filtered", "latency"] 
@@ -119,10 +119,10 @@ services:
       - homepage.group=Tools
       - homepage.name=WatchTower
       - homepage.icon=watchtower.png
-      - homepage.href=http://localhost:8080
+      - homepage.href=http://{IP_PI1}:8080
       - homepage.description=Auto update docker containers
       - homepage.widget.type=watchtower
-      - homepage.widget.url=http://localhost:8080
+      - homepage.widget.url=http://{IP_PI1}:8080
       - homepage.widget.key=demotoken
       - homepage.widget.fields=["containers_scanned", "containers_updated", "containers_failed"] 
 
@@ -192,10 +192,10 @@ services:
       - homepage.group=Tools
       - homepage.name=Grafana
       - homepage.icon=grafana.png
-      - homepage.href=http://localhost:3000
+      - homepage.href=http://{IP_PI1}:3000
       - homepage.description=Graphs
       - homepage.widget.type=grafana
-      - homepage.widget.url=http://localhost:3000
+      - homepage.widget.url=http://{IP_PI1}:3000
       - homepage.widget.username=username
       - homepage.widget.password=password
       - homepage.widget.fields=["dashboards", "datasources", "totalalerts", "alertstriggered"] 
@@ -300,6 +300,7 @@ services:
       - "com.centurylinklabs.watchtower.enable=false"
       - homepage.group=Tools
       - homepage.name=HomeAssistant
+      - homepage.href=http://{IP_PI1}:8123
     logging:
       driver: loki
       options:
