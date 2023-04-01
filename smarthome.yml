@@ -11,9 +11,9 @@ services:
     volumes:
       - ${DATADIR}/homepage:/app/config # Make sure your local config directory exists
       - /var/run/docker.sock:/var/run/docker.sock # (optional) For docker integrations, see alternative methods
-    # environment:
-    #   PUID: $PUID
-    #   PGID: $PGID
+    environment:
+      PUID: $PUID
+      PGID: $PGID
   # heimdall:
   #   image: linuxserver/heimdall
   #   container_name: heimdall
@@ -55,10 +55,10 @@ services:
       - homepage.group=Network
       - homepage.name=AdGuard
       - homepage.icon=adguard-home.png
-      - homepage.href=http://${IP_PI1}:3380
+      - homepage.href=http://${IP_PI1}:3300
       - homepage.description=Ad blocker
       - homepage.widget.type=adguard
-      - homepage.widget.url=http://${IP_PI1}:3380
+      - homepage.widget.url=http://${IP_PI1}:3300
       - homepage.widget.username=admin
       - homepage.widget.password=password
       - homepage.widget.fields=["queries", "blocked", "filtered", "latency"] 
