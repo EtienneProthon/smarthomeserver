@@ -128,7 +128,7 @@ services:
 
   loki:
     container_name: loki
-    image: grafana/loki:2.3.0
+    image: grafana/loki:2.7.5
     restart: unless-stopped
     ports:
       - "127.0.0.1:3100:3100"
@@ -142,7 +142,7 @@ services:
         loki-url: "http://localhost:3100/loki/api/v1/push"
         max-size: "200m"
     labels:
-      - homepage.group=Tools
+      - homepage.group=Monitoring
       - homepage.name=Loki
       - homepage.icon=loki.png
       - homepage.description=Logs aggregator
@@ -169,7 +169,7 @@ services:
   #       max-size: "200m"
 
   mosquitto:
-    image: "eclipse-mosquitto:1.6"
+    image: "eclipse-mosquitto:2.0.15"
     restart: unless-stopped
     volumes:
       - "${DATADIR}/mosquitto/config:/mosquitto/config"
@@ -194,7 +194,7 @@ services:
     ports:
       - 3000:3000
     labels:
-      - homepage.group=Metrics
+      - homepage.group=Monitoring
       - homepage.name=Grafana
       - homepage.icon=grafana.png
       - homepage.href=http://${IP_PI1}:3000
@@ -212,7 +212,7 @@ services:
     #  - GF_SECURITY_ALLOW_EMBEDDING=true
 
   influxdb:
-    image: "influxdb:1.8"
+    image: "influxdb:2.6"
     restart: unless-stopped
     volumes:
       - "${DATADIR}/influxdb/data:/var/lib/influxdb"
@@ -320,7 +320,7 @@ services:
 
   # Monitoring
   prometheus:
-    image: prom/prometheus:v2.37.0
+    image: prom/prometheus:v2.43.0
     container_name: prometheus
     restart: unless-stopped
     user: ${PUID}:${PGID}
