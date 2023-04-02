@@ -201,8 +201,8 @@ services:
       - homepage.description=Graphs
       - homepage.widget.type=grafana
       - homepage.widget.url=http://${IP_PI1}:3000
-      - homepage.widget.username=username
-      - homepage.widget.password=password
+      - homepage.widget.username=${GRAFANA_USERNAME}
+      - homepage.widget.password=${GRAFANA_PASSWORD}
       - homepage.widget.fields=["dashboards", "datasources", "totalalerts", "alertstriggered"] 
     # uncomment this if you wanta to allow anonymus acces to Grafana for embedding (e.g. in Home Assistant dashboards)
     #environment:
