@@ -55,12 +55,12 @@ services:
       - homepage.group=Network
       - homepage.name=AdGuard
       - homepage.icon=adguard-home.png
-      - homepage.href=http://${IP_PI1}:3300
+      - homepage.href=http://${IP_PI1}:3380
       - homepage.description=Ad blocker
       - homepage.widget.type=adguard
-      - homepage.widget.url=http://${IP_PI1}:3300
-      - homepage.widget.username=admin
-      - homepage.widget.password=password
+      - homepage.widget.url=http://${IP_PI1}:3380
+      - homepage.widget.username=${ADGUARD_USERNAME}
+      - homepage.widget.password=${ADGUARD_PASSWORD}
       - homepage.widget.fields=["queries", "blocked", "filtered", "latency"] 
 
   # WIFI hotspot
