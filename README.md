@@ -1,6 +1,29 @@
 # smarthomeserver
 A simple setup for your own smart home server (on a Raspberry Pi)
 
+## Setup
+
+
+- Set a fix ip for your Raspberry Pi
+https://www.tomshardware.com/how-to/static-ip-raspberry-pi
+```
+# Create a folder to host all docker_data
+sudo mkdir /docker_data
+# Give your current user and group
+sudo chown -R $USER /docker_data 
+sudo chgrp -R $GROUPS /docker_data
+# Run the setup script
+./setup.sh
+# Run the docker compose
+sudo docker compose -f smarthome.yml up -d
+# Create mosquitto password (check mosquitto container name with sudo docker ps)
+sudo docker exec -it smarthomeserver-mosquitto-1 sh
+mosquitto_passwd -c /mosquitto/config/password.txt myuser
+# Set your env var in the .env file and update the config with
+sudo docker compose -f smarthome.yml up -d
+```
+- Go at YOUR_SERVER_IP:9080
+
 ## Why you need your own smart home server
 The smart home market is really fragmented. Using different gateways and Apps from different ecosystems can be annoying, expansive and might not work very well together. Instead I suggest using a custom smart home server with some open source software that can replace all your hubs and give you access to one system to control it all.
 

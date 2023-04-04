@@ -252,6 +252,9 @@ services:
       - /dev/ttyACM0:/dev/ttyACM0 # or whichever port your Zigbee stick is connected to
     environment:
       - TZ=${TZ}
+      - ZIGBEE2MQTT_CONFIG_MQTT_SERVER=${IP_PI1}:1883
+      - ZIGBEE2MQTT_CONFIG_MQTT_USER=${MQTT_USERNAME}
+      - ZIGBEE2MQTT_CONFIG_MQTT_PASSWORD=${MQTT_PASSWORD}
     logging:
       driver: loki
       options:
@@ -261,6 +264,7 @@ services:
       - homepage.group=Home Automation
       - homepage.name=Zigbee2mqtt
       - homepage.icon=zigbee2mqtt.png
+      - homepage.href=http://${IP_PI1}:6080
       - homepage.description=Zigbee to MQTT
  
   zigbee2mqttAssistant:
@@ -277,6 +281,7 @@ services:
     labels:
       - homepage.group=Home Automation
       - homepage.name=Zigbee2mqttAssistant
+      - homepage.href=http://${IP_PI1}:8880
       - homepage.description=Zigbee to MQTT Assistant
 
   homeassistant:
