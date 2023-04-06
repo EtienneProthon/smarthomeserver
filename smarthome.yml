@@ -252,7 +252,7 @@ services:
       - /dev/ttyACM0:/dev/ttyACM0 # or whichever port your Zigbee stick is connected to
     environment:
       - TZ=${TZ}
-      - ZIGBEE2MQTT_CONFIG_MQTT_SERVER=${IP_PI1}:1883
+      - ZIGBEE2MQTT_CONFIG_MQTT_SERVER=mqtt://${IP_PI1}:1883
       - ZIGBEE2MQTT_CONFIG_MQTT_USER=${MQTT_USERNAME}
       - ZIGBEE2MQTT_CONFIG_MQTT_PASSWORD=${MQTT_PASSWORD}
     logging:
