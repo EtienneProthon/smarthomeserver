@@ -3,9 +3,18 @@ A simple setup for your own smart home server (on a Raspberry Pi)
 
 ## Setup
 
+```
+# Set a fix ip for your Raspberry Pi using network manager
+sudo nmcli c mod 'Wired connection 1' ipv4.addresses YOUR_IP/24 ipv4.method manual
+# Allow access to memory usage metrics
+sudo vi /boot/cmdline.txt
+# Add `cgroup_enable=cpuset cgroup_enable=memory cgroup_memory=1` at the end of the line
+# Install docker
+# Activate loki plugin for docker 
+docker plugin install grafana/loki-docker-driver:arm-v7 --alias loki --grant-all-permissions
+```
 
-- Set a fix ip for your Raspberry Pi
-https://www.tomshardware.com/how-to/static-ip-raspberry-pi
+
 ```
 # Create a folder to host all docker_data
 sudo mkdir /docker_data

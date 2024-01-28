@@ -4,7 +4,7 @@ version: "3"
 services:
   # Overview
   homepage:
-    image: ghcr.io/benphelps/homepage:latest
+    image: ghcr.io/gethomepage/homepage:latest
     container_name: homepage
     ports:
       - 9080:3000
@@ -59,8 +59,8 @@ services:
       - homepage.description=Ad blocker
       - homepage.widget.type=adguard
       - homepage.widget.url=http://${IP_PI1}:3380
-      - homepage.widget.username=${ADGUARD_USERNAME}
-      - homepage.widget.password=${ADGUARD_PASSWORD}
+      - homepage.widget.username=${ADGUARD_USERNAME?:Missing environment variable ADGUARD_USERNAME}
+      - homepage.widget.password=${ADGUARD_PASSWORD:?Missing environment variable ADGUARD_PASSWORD}
       - homepage.widget.fields=["queries", "blocked", "filtered", "latency"] 
 
   # WIFI hotspot
@@ -92,39 +92,65 @@ services:
   #       loki-url: "http://localhost:3100/loki/api/v1/push"
   #       max-size: "200m"
 
-  watchtower:
-    image: containrrr/watchtower
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    environment:
-      - TZ=${TZ}
-      - WATCHTOWER_CLEANUP=true # deleting old unused images automatically
-      # optional for notifications
-      #- WATCHTOWER_NOTIFICATIONS=email
-      #- WATCHTOWER_NOTIFICATION_EMAIL_FROM=${EMAIL_FROM}
-      #- WATCHTOWER_NOTIFICATION_EMAIL_TO=${WATCHTOWER_EMAIL_TO}
-      #- WATCHTOWER_NOTIFICATION_EMAIL_SERVER=${SMTP_SERVER}
-      #- WATCHTOWER_NOTIFICATION_EMAIL_SERVER_PORT=${SMTP_PORT}
-      #- WATCHTOWER_NOTIFICATION_EMAIL_SERVER_USER=${SMTP_USER}
-      #- WATCHTOWER_NOTIFICATION_EMAIL_SERVER_PASSWORD=${SMTP_PASSWORD}
-      # alternative for notification via pushover
-      #- WATCHTOWER_NOTIFICATIONS=shoutrrr
-      #- WATCHTOWER_NOTIFICATION_URL=pushover://shoutrrr:${PO_TOKEN}@${PO_USERKEY}
-    logging:
-      driver: loki
-      options:
-        loki-url: "http://localhost:3100/loki/api/v1/push"
-        max-size: "200m"
-    labels:
-      - homepage.group=Tools
-      - homepage.name=WatchTower
-      - homepage.icon=watchtower.png
-      - homepage.href=http://${IP_PI1}:8080
-      - homepage.description=Auto update docker containers
-      - homepage.widget.type=watchtower
-      - homepage.widget.url=http://${IP_PI1}:8080
-      - homepage.widget.key=demotoken
-      - homepage.widget.fields=["containers_scanned", "containers_updated", "containers_failed"] 
+  diun:
+      container_name: diun
+      image: crazymax/diun:4.26
+      command: serve
+      volumes:
+        - ${DATADIR}/diun/data:/data
+        - /var/run/docker.sock:/var/run/docker.sock
+      environment:
+        - TZ=${TZ}
+        - DIUN_WATCH_SCHEDULE=0 19 * * FRI,SAT,SUN
+        - DIUN_PROVIDERS_DOCKER=true
+        - DIUN_PROVIDERS_DOCKER_WATCHBYDEFAULT=true
+        - DIUN_NOTIF_DISCORD_WEBHOOKURL=${DIUN_NOTIF_DISCORD_WEBHOOKURL}
+        - DIUN_NOTIF_DISCORD_TEMPLATEBODY=${DIUN_NOTIF_DISCORD_TEMPLATEBODY}
+      restart: unless-stopped
+      logging:
+        driver: loki
+        options:
+          loki-url: "http://localhost:3100/loki/api/v1/push"
+          max-size: "100m"
+      labels:
+        - homepage.group=Tools
+        - homepage.name=Diun
+        - homepage.icon=diun.png
+        # - homepage.href=http://${IP_PI1}:8123
+
+  # watchtower:
+  #   image: containrrr/watchtower
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #   environment:
+  #     - TZ=${TZ}
+  #     - WATCHTOWER_CLEANUP=true # deleting old unused images automatically
+  #     # optional for notifications
+  #     #- WATCHTOWER_NOTIFICATIONS=email
+  #     #- WATCHTOWER_NOTIFICATION_EMAIL_FROM=${EMAIL_FROM}
+  #     #- WATCHTOWER_NOTIFICATION_EMAIL_TO=${WATCHTOWER_EMAIL_TO}
+  #     #- WATCHTOWER_NOTIFICATION_EMAIL_SERVER=${SMTP_SERVER}
+  #     #- WATCHTOWER_NOTIFICATION_EMAIL_SERVER_PORT=${SMTP_PORT}
+  #     #- WATCHTOWER_NOTIFICATION_EMAIL_SERVER_USER=${SMTP_USER}
+  #     #- WATCHTOWER_NOTIFICATION_EMAIL_SERVER_PASSWORD=${SMTP_PASSWORD}
+  #     # alternative for notification via pushover
+  #     #- WATCHTOWER_NOTIFICATIONS=shoutrrr
+  #     #- WATCHTOWER_NOTIFICATION_URL=pushover://shoutrrr:${PO_TOKEN}@${PO_USERKEY}
+  #   logging:
+  #     driver: loki
+  #     options:
+  #       loki-url: "http://localhost:3100/loki/api/v1/push"
+  #       max-size: "200m"
+  #   labels:
+  #     - homepage.group=Tools
+  #     - homepage.name=WatchTower
+  #     - homepage.icon=watchtower.png
+  #     - homepage.href=http://${IP_PI1}:8080
+  #     - homepage.description=Auto update docker containers
+  #     - homepage.widget.type=watchtower
+  #     - homepage.widget.url=http://${IP_PI1}:8080
+  #     - homepage.widget.key=demotoken
+  #     - homepage.widget.fields=["containers_scanned", "containers_updated", "containers_failed"] 
 
   loki:
     container_name: loki
@@ -133,7 +159,9 @@ services:
     ports:
       - "127.0.0.1:3100:3100"
     volumes:
-      - ${DATADIR}/loki/config/loki-config.yaml:/etc/loki/loki-config.yaml
+      - type: bind
+        source: ${DATADIR}/loki/config/loki-config.yaml
+        target: /etc/loki/loki-config.yaml
       - ${DATADIR}/loki/data:/data/loki
     command: -config.file=/etc/loki/loki-config.yaml
     logging:
@@ -201,8 +229,8 @@ services:
       - homepage.description=Graphs
       - homepage.widget.type=grafana
       - homepage.widget.url=http://${IP_PI1}:3000
-      - homepage.widget.username=${GRAFANA_USERNAME}
-      - homepage.widget.password=${GRAFANA_PASSWORD}
+      - homepage.widget.username=${GRAFANA_USERNAME:?Missing environment variable GRAFANA_USERNAME}
+      - homepage.widget.password=${GRAFANA_PASSWORD:?Missing environment variable GRAFANA_PASSWORD}
       - homepage.widget.fields=["dashboards", "datasources", "totalalerts", "alertstriggered"] 
     # uncomment this if you wanta to allow anonymus acces to Grafana for embedding (e.g. in Home Assistant dashboards)
     #environment:
@@ -311,8 +339,6 @@ services:
       - PGID=${PGID}
       - TZ=${TZ}
     labels:
-      # don't automatically update this container as it might break your setup
-      - "com.centurylinklabs.watchtower.enable=false"
       - homepage.group=Home Automation
       - homepage.name=HomeAssistant
       - homepage.icon=home-assistant.png
