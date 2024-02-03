@@ -1,6 +1,7 @@
 source .env
 mkdir -p $DATADIR/grafana/data 
 mkdir -p $DATADIR/diun/data 
+mkdir -p $DATADIR/nodered/data 
 mkdir -p $DATADIR/homepage && cp config/homepage-docker.yaml $DATADIR/homepage/docker.yaml
 mkdir -p $DATADIR/loki/data && mkdir -p $DATADIR/loki/config && cp config/loki-config.yaml $DATADIR/loki/config/loki-config.yaml
 mkdir -p $DATADIR/prometheus/etc && mkdir -p $DATADIR/prometheus/data && cp config/prometheus_config.yaml $DATADIR/prometheus/etc/prometheus.yml

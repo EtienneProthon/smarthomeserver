@@ -6,6 +6,7 @@ services:
   homepage:
     image: ghcr.io/gethomepage/homepage:latest
     container_name: homepage
+    restart: unless-stopped
     ports:
       - 9080:3000
     volumes:
@@ -42,8 +43,8 @@ services:
       - "3300:3000/tcp"
       - "3380:80/tcp"
     volumes:
-       - '${DATADIR}/adguard/workdir:/opt/adguardhome/work'
-       - '${DATADIR}/adguard/confdir:/opt/adguardhome/conf'
+      - "${DATADIR}/adguard/workdir:/opt/adguardhome/work"
+      - "${DATADIR}/adguard/confdir:/opt/adguardhome/conf"
     cap_add:
       - NET_ADMIN
     logging:
@@ -61,7 +62,7 @@ services:
       - homepage.widget.url=http://${IP_PI1}:3380
       - homepage.widget.username=${ADGUARD_USERNAME?:Missing environment variable ADGUARD_USERNAME}
       - homepage.widget.password=${ADGUARD_PASSWORD:?Missing environment variable ADGUARD_PASSWORD}
-      - homepage.widget.fields=["queries", "blocked", "filtered", "latency"] 
+      - homepage.widget.fields=["queries", "blocked", "filtered", "latency"]
 
   # WIFI hotspot
   # unifi-controller:
@@ -93,30 +94,30 @@ services:
   #       max-size: "200m"
 
   diun:
-      container_name: diun
-      image: crazymax/diun:4.26
-      command: serve
-      volumes:
-        - ${DATADIR}/diun/data:/data
-        - /var/run/docker.sock:/var/run/docker.sock
-      environment:
-        - TZ=${TZ}
-        - DIUN_WATCH_SCHEDULE=0 19 * * FRI,SAT,SUN
-        - DIUN_PROVIDERS_DOCKER=true
-        - DIUN_PROVIDERS_DOCKER_WATCHBYDEFAULT=true
-        - DIUN_NOTIF_DISCORD_WEBHOOKURL=${DIUN_NOTIF_DISCORD_WEBHOOKURL}
-        - DIUN_NOTIF_DISCORD_TEMPLATEBODY=${DIUN_NOTIF_DISCORD_TEMPLATEBODY}
-      restart: unless-stopped
-      logging:
-        driver: loki
-        options:
-          loki-url: "http://localhost:3100/loki/api/v1/push"
-          max-size: "100m"
-      labels:
-        - homepage.group=Tools
-        - homepage.name=Diun
-        - homepage.icon=diun.png
-        # - homepage.href=http://${IP_PI1}:8123
+    container_name: diun
+    image: crazymax/diun:4.26
+    command: serve
+    volumes:
+      - ${DATADIR}/diun/data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - TZ=${TZ}
+      - DIUN_WATCH_SCHEDULE=0 19 * * FRI,SAT,SUN
+      - DIUN_PROVIDERS_DOCKER=true
+      - DIUN_PROVIDERS_DOCKER_WATCHBYDEFAULT=true
+      - DIUN_NOTIF_DISCORD_WEBHOOKURL=${DIUN_NOTIF_DISCORD_WEBHOOKURL}
+      - DIUN_NOTIF_DISCORD_TEMPLATEBODY=${DIUN_NOTIF_DISCORD_TEMPLATEBODY}
+    restart: unless-stopped
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://localhost:3100/loki/api/v1/push"
+        max-size: "100m"
+    labels:
+      - homepage.group=Tools
+      - homepage.name=Diun
+      - homepage.icon=diun.png
+      # - homepage.href=http://${IP_PI1}:8123
 
   # watchtower:
   #   image: containrrr/watchtower
@@ -150,7 +151,7 @@ services:
   #     - homepage.widget.type=watchtower
   #     - homepage.widget.url=http://${IP_PI1}:8080
   #     - homepage.widget.key=demotoken
-  #     - homepage.widget.fields=["containers_scanned", "containers_updated", "containers_failed"] 
+  #     - homepage.widget.fields=["containers_scanned", "containers_updated", "containers_failed"]
 
   loki:
     container_name: loki
@@ -174,7 +175,6 @@ services:
       - homepage.name=Loki
       - homepage.icon=loki.png
       - homepage.description=Logs aggregator
-
 
   # duplicati:
   #   image: lscr.io/linuxserver/duplicati:2.0.6
@@ -221,6 +221,8 @@ services:
       - "${DATADIR}/grafana/data:/var/lib/grafana"
     ports:
       - 3000:3000
+    environment:
+      - GF_SERVER_ROOT_URL=http://${IP_PI1}:3000
     labels:
       - homepage.group=Monitoring
       - homepage.name=Grafana
@@ -231,7 +233,7 @@ services:
       - homepage.widget.url=http://${IP_PI1}:3000
       - homepage.widget.username=${GRAFANA_USERNAME:?Missing environment variable GRAFANA_USERNAME}
       - homepage.widget.password=${GRAFANA_PASSWORD:?Missing environment variable GRAFANA_PASSWORD}
-      - homepage.widget.fields=["dashboards", "datasources", "totalalerts", "alertstriggered"] 
+      - homepage.widget.fields=["dashboards", "datasources", "totalalerts", "alertstriggered"]
     # uncomment this if you wanta to allow anonymus acces to Grafana for embedding (e.g. in Home Assistant dashboards)
     #environment:
     #  - GF_AUTH_DISABLE_LOGIN_FORM=true
@@ -250,12 +252,13 @@ services:
       timeout: 1s
       retries: 24
     ports:
-      - 127.0.0.1:8086:8086
+      - 8086:8086
     labels:
       - homepage.group=Tools
       - homepage.name=InfluxDB
       - homepage.icon=influxdb.png
       - homepage.description=Database
+      - homepage.href=http://${IP_PI1}:8086
 
   # tasmoadmin:
   #   image: "raymondmm/tasmoadmin"
@@ -294,23 +297,23 @@ services:
       - homepage.icon=zigbee2mqtt.png
       - homepage.href=http://${IP_PI1}:6080
       - homepage.description=Zigbee to MQTT
- 
-  zigbee2mqttAssistant:
-    image: carldebilly/zigbee2mqttassistant
-    restart: unless-stopped
-    depends_on:
-      zigbee2mqtt:
-        condition: service_started
-    environment:
-      - Z2MA_SETTINGS__MQTTSERVER=mosquitto
-      - TZ=${TZ}
-    ports:
-      - 8880:80
-    labels:
-      - homepage.group=Home Automation
-      - homepage.name=Zigbee2mqttAssistant
-      - homepage.href=http://${IP_PI1}:8880
-      - homepage.description=Zigbee to MQTT Assistant
+
+  # zigbee2mqttAssistant:
+  #   image: carldebilly/zigbee2mqttassistant
+  #   restart: unless-stopped
+  #   depends_on:
+  #     zigbee2mqtt:
+  #       condition: service_started
+  #   environment:
+  #     - Z2MA_SETTINGS__MQTTSERVER=mosquitto
+  #     - TZ=${TZ}
+  #   ports:
+  #     - 8880:80
+  #   labels:
+  #     - homepage.group=Home Automation
+  #     - homepage.name=Zigbee2mqttAssistant
+  #     - homepage.href=http://${IP_PI1}:8880
+  #     - homepage.description=Zigbee to MQTT Assistant
 
   homeassistant:
     container_name: homeassistant
@@ -377,11 +380,11 @@ services:
     image: prom/node-exporter
     container_name: node_exporter
     command:
-      - '--path.rootfs=/host'
+      - "--path.rootfs=/host"
     pid: host
     restart: unless-stopped
     volumes:
-      - '/:/host:ro,rslave'
+      - "/:/host:ro,rslave"
     logging:
       driver: loki
       options:
@@ -420,3 +423,25 @@ services:
       - homepage.name=cAdvisor
       - homepage.icon=cadvisor.png
       - homepage.description=Container Advisor
+
+  nodered:
+    image: nodered/node-red:latest-18
+    container_name: nodered
+    volumes:
+      - ${DATADIR}/nodered/data:/data
+    restart: unless-stopped
+    ports:
+      - "1880:1880"
+    environment:
+      - TZ=${TZ}
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://localhost:3100/loki/api/v1/push"
+        max-size: "10m"
+    labels:
+      - homepage.group=Home Automation
+      - homepage.name=NodeRed
+      - homepage.icon=node-red.png
+      - homepage.description=NodeRed
+      - homepage.href=http://${IP_PI1}:1880
