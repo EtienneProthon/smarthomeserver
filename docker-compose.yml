@@ -1,5 +1,3 @@
-version: "3"
-
 # a couple of services for your smarthome, remember to set up your .env file first
 services:
   # Overview
@@ -95,7 +93,7 @@ services:
 
   diun:
     container_name: diun
-    image: crazymax/diun:4.26
+    image: crazymax/diun:4.28
     command: serve
     volumes:
       - ${DATADIR}/diun/data:/data
@@ -197,7 +195,7 @@ services:
   #       max-size: "200m"
 
   mosquitto:
-    image: "eclipse-mosquitto:2.0.15"
+    image: "eclipse-mosquitto:2.0.18"
     restart: unless-stopped
     volumes:
       - "${DATADIR}/mosquitto/config:/mosquitto/config"
@@ -242,10 +240,10 @@ services:
     #  - GF_SECURITY_ALLOW_EMBEDDING=true
 
   influxdb:
-    image: "influxdb:2.6"
+    image: "influxdb:2.7"
     restart: unless-stopped
     volumes:
-      - "${DATADIR}/influxdb/data:/var/lib/influxdb"
+      - "${DATADIR}/influxdb/data:/var/lib/influxdb2:rw"
     healthcheck:
       test: ["CMD", "curl", "-sI", "http://127.0.0.1:8086/ping"]
       interval: 30s
@@ -354,7 +352,7 @@ services:
 
   # Monitoring
   prometheus:
-    image: prom/prometheus:v2.43.0
+    image: prom/prometheus:v2.51.2
     container_name: prometheus
     restart: unless-stopped
     user: ${PUID}:${PGID}
