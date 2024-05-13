@@ -475,9 +475,52 @@ services:
       - MYSQL_DATABASE=nextcloud
       - MYSQL_USER=nextcloud
       - MYSQL_HOST=mariadb
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://localhost:3100/loki/api/v1/push"
+        max-size: "10m"
     labels:
       - homepage.group=Cloud
       - homepage.name=NextCloud
       - homepage.icon=nextcloud.png
       - homepage.description=Personnal cloud
       - homepage.href=http://${IP_PI1}:8080
+      # widget:
+      #   type: nextcloud
+      #   url: https://nextcloud.host.or.ip:port
+      #   key: token
+
+  jellyfin:
+    image: jellyfin/jellyfin
+    container_name: jellyfin
+    restart: 'unless-stopped'
+    ports:
+      - 8096:8096
+    user: "$PUID:$PGID"
+    volumes:
+      - ${DATADIR}/jellyfin/config:/config
+      - ${DATADIR}/jellyfin/cache:/cache
+      - type: bind
+        source: ${EXT1DATADIR}/jellyfin/media
+        target: /media
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://localhost:3100/loki/api/v1/push"
+        max-size: "10m"
+    labels:
+      - homepage.group=Cloud
+      - homepage.name=Jellyfin
+      - homepage.icon=jellyfin.png
+      - homepage.description=Video Streaming
+      - homepage.href=http://${IP_PI1}:8096
+      # widget:
+      #   type: jellyfin
+      #   url: http://jellyfin.host.or.ip
+      #   key: apikeyapikeyapikeyapikeyapikey
+      #   enableBlocks: true # optional, defaults to false
+      #   enableNowPlaying: true # optional, defaults to true
+      #   enableUser: true # optional, defaults to false
+      #   showEpisodeNumber: true # optional, defaults to false
+      #   expandOneStreamToTwoRows: false # optional, defaults to true

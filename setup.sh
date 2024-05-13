@@ -7,4 +7,6 @@ mkdir -p $DATADIR/loki/data && mkdir -p $DATADIR/loki/config && cp config/loki-c
 mkdir -p $DATADIR/prometheus/etc && mkdir -p $DATADIR/prometheus/data && cp config/prometheus_config.yaml $DATADIR/prometheus/etc/prometheus.yml
 mkdir -p $DATADIR/mosquitto/config && mkdir -p $DATADIR/mosquitto/log && mkdir -p $DATADIR/mosquitto/data && cp config/mosquitto.conf $DATADIR/mosquitto/config/mosquitto.conf
 mkdir -p $DATADIR/zigbee2mqtt/data && cp config/zigbee2mqtt_configuration.yaml $DATADIR/zigbee2mqtt/data/configuration.yaml
+mkdir -p $DATADIR/jellyfin/config && mkdir -p $DATADIR/jellyfin/cache
 mkdir -p $EXT1DATADIR/nextcloud
+mkdir -p $EXT1DATADIR/jellyfin/media
