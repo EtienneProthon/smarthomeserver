@@ -10,7 +10,8 @@ services:
     volumes:
       - ${DATADIR}/homepage:/app/config # Make sure your local config directory exists
       - /var/run/docker.sock:/var/run/docker.sock # (optional) For docker integrations, see alternative methods
-    # environment:
+    environment:
+      HOMEPAGE_ALLOWED_HOSTS: 192.168.1.94:9080
     #   PUID: $PUID
     #   PGID: $PGID
   # heimdall:
@@ -93,7 +94,7 @@ services:
 
   diun:
     container_name: diun
-    image: crazymax/diun:4.28
+    image: crazymax/diun:4.30
     command: serve
     volumes:
       - ${DATADIR}/diun/data:/data
@@ -153,7 +154,7 @@ services:
 
   loki:
     container_name: loki
-    image: grafana/loki:2.7.5
+    image: grafana/loki:2.9.17
     restart: unless-stopped
     ports:
       - "127.0.0.1:3100:3100"
@@ -195,7 +196,7 @@ services:
   #       max-size: "200m"
 
   mosquitto:
-    image: "eclipse-mosquitto:2.0.18"
+    image: "eclipse-mosquitto:2.0.22"
     restart: unless-stopped
     volumes:
       - "${DATADIR}/mosquitto/config:/mosquitto/config"
@@ -278,7 +279,7 @@ services:
       - ${DATADIR}/zigbee2mqtt/data:/app/data
       - /run/udev:/run/udev:ro
     devices:
-      - /dev/ttyACM0:/dev/ttyACM0 # or whichever port your Zigbee stick is connected to
+      - /dev/ttyUSB0:/dev/ttyUSB0 # or whichever port your Zigbee stick is connected to
     environment:
       - TZ=${TZ}
       - ZIGBEE2MQTT_CONFIG_MQTT_SERVER=mqtt://${IP_PI1}:1883
@@ -316,7 +317,7 @@ services:
   homeassistant:
     container_name: homeassistant
     restart: unless-stopped
-    image: homeassistant/raspberrypi4-homeassistant
+    image: ghcr.io/home-assistant/home-assistant:stable
     #devices:
     #  - /dev/ttyUSB0:/dev/ttyUSB0
     #  - /dev/ttyUSB1:/dev/ttyUSB1
@@ -352,7 +353,7 @@ services:
 
   # Monitoring
   prometheus:
-    image: prom/prometheus:v2.51.2
+    image: prom/prometheus:v2.55.1
     container_name: prometheus
     restart: unless-stopped
     user: ${PUID}:${PGID}
@@ -494,7 +495,7 @@ services:
   jellyfin:
     image: jellyfin/jellyfin
     container_name: jellyfin
-    restart: 'unless-stopped'
+    restart: unless-stopped
     ports:
       - 8096:8096
     user: "$PUID:$PGID"
